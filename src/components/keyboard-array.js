@@ -11,6 +11,7 @@ export default [
 ['9','('],
 ['0',')'],
 ['-','_'],
+['+','='],
 ['Backspace',null,true],
 
 ['Tab',null,true],
@@ -56,13 +57,13 @@ export default [
 [',','<',false,'б'],
 ['.','>',false,'ю'],
 ['/',":",false,'.',','],
-['\u2191']
+['\u2191'],
 ['ShiftR',null,true],
 
 ['CtrlL',null,true],
 ['Win',null,true],
 ['AltL',null,true],
-[' ',null,true],
+['',null,true],
 ['AltR',null,true],
 ['CtrlR',null,true],
 ['\u2190'],

@@ -1,0 +1,27 @@
+.button {
+   background: #E5F0FF;
+   height:50px;
+   
+   border-radius:2px;
+   display: flex;
+   align-items: center;
+   justify-content: center;
+   width:50px;
+   font-size:1.5em;
+   color: #2C73D2;
+   position: relative;
+   &.btnCapsLK,&.btnShiftL,&.btnBackspace,&.btnShiftR,&.btnEnter{
+      width:110px;
+   }
+   &.btn{
+      width: 350px;
+   }
+
+   &__additional-letter{
+      color: #95A7DD;
+      font-size:0.8em;
+      position: absolute;
+      top:5px;
+      right:5px;
+   }
+}

@@ -13,6 +13,8 @@ function createButton(englishLetter, englishAddLetter, special, russianLetter, r
   if (englishAddLetter) {
     const additionalLetterBlock = document.createElement("div");
     additionalLetterBlock.classList.add("button__additional-letter");
+    additionalLetterBlock.innerText = englishAddLetter;
+    buttonBlock.appendChild(additionalLetterBlock);
   }
 
   keyboard.createNewButton(`btn${englishLetter.toUpperCase()}`, [englishLetter, englishAddLetter, special, russianLetter, russianAddLetter]);
