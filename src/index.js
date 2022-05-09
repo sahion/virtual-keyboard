@@ -1,3 +1,5 @@
+import keyboard from "./components/keyboard";
+
 const a = document.createElement("div");
 a.classList.add("center");
 a.style.background = "red";
