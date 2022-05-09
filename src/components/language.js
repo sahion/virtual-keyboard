@@ -1,4 +1,4 @@
-export default {
+export default class {
    constructor(mainLetter,additionalLetter){
       this.mainLetter = mainLetter;
       if (additionalLetter){

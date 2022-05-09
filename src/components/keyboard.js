@@ -1,4 +1,14 @@
-import Button from "button";
+import Button from "./button";
 
-export default {
+export default class {
+   constructor(){
+      const keyboard = this;
+
+      this.createNewButton = function(buttonName,buttonArgs) {
+         keyboard[buttonName] = new Button(...buttonArgs);
+      }
+   }
+
+   
+   
 }

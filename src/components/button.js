@@ -1,16 +1,18 @@
-import Language from "language";
+import Language from "./language";
 
 
-export default {
-   button: this,
-   languages : {
-   },
-   constructor(special=false,englishLetter,englishAddLetter,secondLanguage=false,russianLetter,russianAddLetter,){
+export default class {
+
+
+   constructor(englishLetter,englishAddLetter,special=false,russianLetter,russianAddLetter){
+      const button = this;
+      this.languages = {};
       button.special =  special;
-      button.languages.english = new Language(englishLetter,englishAddLetter);
-      if (secondLanguage){
-         button.languages.russian = new Language(russianLetter,russianAddLetter);
+      button.languages['english'] = new Language(englishLetter,englishAddLetter);
+      if (russianLetter){
+         button.languages['russian'] = new Language(russianLetter,russianAddLetter);
       }
-   },
+   }
+  
    
 }
