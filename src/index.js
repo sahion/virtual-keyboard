@@ -17,7 +17,8 @@ document.body.appendChild(container);
 container.appendChild(textField);
 container.appendChild(keyboardBlock);
 
-const language = "english";
+const languages = ["english", "russian"];
+let language = "english";
 
 function createButton(englishLetter, englishAddLetter, special, russianLetter, russianAddLetter) {
   const buttonBlock = document.createElement("div");
@@ -140,9 +141,44 @@ function createButton(englishLetter, englishAddLetter, special, russianLetter, r
 allButtons.forEach((btn) => createButton(...btn));
 
 function liftUpKey(event) {
-  console.log(event);
   const key = keyboardBlock.querySelector(`.${[event.code]}`);
   key.classList.remove("button_pressed");
+  if (event.key === "Shift") {
+    const buttons = document.querySelectorAll(".button");
+    buttons.forEach((button) => {
+      if (keyboard[button.classList[2]].languages[language]
+         && keyboard[button.classList[2]].languages[language].additionalLetter) {
+        button.innerText = keyboard[button.classList[2]].languages[language].mainLetter;
+
+        const additionalLetterBlock = document.createElement("div");
+        additionalLetterBlock.classList.add("button__additional-letter");
+        additionalLetterBlock.innerText = keyboard[button.classList[2]]
+          .languages[language].additionalLetter;
+        button.appendChild(additionalLetterBlock);
+      } else if (button.innerText.length === 1
+         && button.innerText !== button.innerText.toLowerCase()) {
+        button.innerText = button.innerText.toLowerCase();
+      } else if (button.innerText.length === 1
+         && button.innerText !== button.innerText.toUpperCase()) {
+        button.innerText = button.innerText.toUpperCase();
+      }
+    });
+  }
+}
+
+function changeButtons() {
+  const buttons = document.querySelectorAll(".button");
+  buttons.forEach((button) => {
+    if (!keyboard[button.classList[2]].languages[language] || keyboard[button.classList[2]].special) { return "not changed"; }
+    button.innerText = keyboard[button.classList[2]].languages[language].mainLetter.toUpperCase();
+    if (!keyboard[button.classList[2]].languages[language].additionalLetter) { return "additional not changed"; }
+    const additionalLetterBlock = document.createElement("div");
+    additionalLetterBlock.classList.add("button__additional-letter");
+    additionalLetterBlock.innerText = keyboard[button.classList[2]]
+      .languages[language].additionalLetter;
+    button.appendChild(additionalLetterBlock);
+    return "success";
+  });
 }
 
 function pressedKey(event) {
@@ -150,11 +186,52 @@ function pressedKey(event) {
   if (event.repeat) {
     return "sameBtn";
   }
-  console.log(event);
 
   const key = keyboardBlock.querySelector(`.${[event.code]}`);
   key.classList.add("button_pressed");
   document.addEventListener("keyup", liftUpKey);
+
+  console.log(event);
+  if ((event.key === "Shift" && event.ctrlKey) || (event.key === "Control" && event.shiftKey)) {
+    language = (languages[languages.indexOf(language) + 1])
+      ? languages[languages.indexOf(language) + 1] : languages[0];
+    changeButtons();
+  } else if (event.key === "Shift") {
+    const buttons = document.querySelectorAll(".button");
+    buttons.forEach((button) => {
+      if (!keyboard[button.classList[2]].special
+         && keyboard[button.classList[2]].languages[language]
+         && keyboard[button.classList[2]].languages[language].additionalLetter) {
+        button.innerText = keyboard[button.classList[2]]
+          .languages[language].additionalLetter;
+
+        const additionalLetterBlock = document.createElement("div");
+        additionalLetterBlock.classList.add("button__additional-letter");
+        additionalLetterBlock.innerText = keyboard[button.classList[2]]
+          .languages[language].mainLetter;
+        button.appendChild(additionalLetterBlock);
+      } else if (button.innerText.length === 1
+        && button.innerText !== button.innerText.toUpperCase()) {
+        button.innerText = button.innerText.toUpperCase();
+      } else if (button.innerText.length === 1
+        && button.innerText !== button.innerText.toLowerCase()) {
+        button.innerText = button.innerText.toLowerCase();
+      }
+    });
+  } else if (event.key === "CapsLock") {
+    const buttons = document.querySelectorAll(".button");
+    buttons.forEach((button) => {
+      if (button.innerText.length === 1
+        && button.innerText !== button.innerText.toLowerCase()) {
+        button.innerText = button.innerText.toLowerCase();
+      } else if (button.innerText.length === 1
+        && button.innerText !== button.innerText.toUpperCase()) {
+        button.innerText = button.innerText.toUpperCase();
+      }
+    });
+  } else if (!keyboard[event.code].special) {
+    textField.textContent += key.innerText.slice(0, 1);
+  }
   return "success";
 }
 
