@@ -11,7 +11,7 @@ export default [
 ['9','('],
 ['0',')'],
 ['-','_'],
-['+','='],
+['=','+'],
 ['Backspace',null,true],
 
 ['Tab',null,true],
@@ -30,7 +30,7 @@ export default [
 ['\\','|',false,'\\','/'],
 ['Del',null,true],
 
-['CapsLk',null,true],
+['CapsLock',null,true],
 ['a',null,false,'й'],
 ['s',null,false,'ц'],
 ['d',null,false,'у'],
@@ -41,7 +41,7 @@ export default [
 ['k',null,false,'ш'],
 ['l',null,false,'щ'],
 [';',":",false,'ж'],
-[';',":",false,'э'],
+[`'`,`"`,false,'э'],
 ['Enter',null,true],
 
 
@@ -63,7 +63,7 @@ export default [
 ['CtrlL',null,true],
 ['Win',null,true],
 ['AltL',null,true],
-['',null,true],
+[''],
 ['AltR',null,true],
 ['CtrlR',null,true],
 ['\u2190'],

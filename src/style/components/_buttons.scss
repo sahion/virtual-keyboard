@@ -1,20 +1,30 @@
+$primary-color: #2C73D2;
+$primary-light-color:#E5F0FF;
+
+
 .button {
-   background: #E5F0FF;
+   background: $primary-light-color;
    height:50px;
-   
+   transition: 1s all;
    border-radius:2px;
    display: flex;
    align-items: center;
    justify-content: center;
    width:50px;
    font-size:1.5em;
-   color: #2C73D2;
+   color: $primary-color;
    position: relative;
-   &.btnCapsLK,&.btnShiftL,&.btnBackspace,&.btnShiftR,&.btnEnter{
+   &.CapsLock,&.ShiftLeft,&.Backspace,&.ShiftRight,&.Enter{
       width:110px;
    }
-   &.btn{
+   &.Space{
       width: 350px;
+   }
+
+
+   &_pressed{
+      background-color: $primary-color;
+      color: $primary-light-color;
    }
 
    &__additional-letter{
