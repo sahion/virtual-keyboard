@@ -22,9 +22,10 @@ $primary-light-color:#E5F0FF;
    }
 
 
-   &_pressed{
+   &_pressed,&:hover{
       background-color: $primary-color;
       color: $primary-light-color;
+      cursor: pointer;
    }
 
    &__additional-letter{

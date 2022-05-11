@@ -5,7 +5,7 @@
 
 
 body {
-   background: gray;
+   background: #6db094;
 }
 
 .container{
@@ -15,4 +15,9 @@ body {
    justify-content:space-around;
    flex-direction:column;
    height:90vh;
+}
+
+h2{
+   color:$primary-light-color;
+   text-align: center;
 }

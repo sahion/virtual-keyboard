@@ -9,16 +9,24 @@ container.classList.add("container");
 
 const textField = document.createElement("textarea");
 textField.classList.add("textarea");
+textField.readOnly = true;
+
+const information = document.createElement("h2");
+information.innerText = "Created on Windows system\nChange language on ctrl+shift combination";
 
 const keyboardBlock = document.createElement("div");
 keyboardBlock.classList.add("keyboard");
 
 document.body.appendChild(container);
 container.appendChild(textField);
+container.appendChild(information);
 container.appendChild(keyboardBlock);
 
 const languages = ["english", "russian"];
 let language = "english";
+
+let shiftActive = false;
+let ctrlActive = false;
 
 function createButton(englishLetter, englishAddLetter, special, russianLetter, russianAddLetter) {
   const buttonBlock = document.createElement("div");
@@ -145,80 +153,138 @@ function liftUpKey(event) {
   key.classList.remove("button_pressed");
   if (event.key === "Shift") {
     const buttons = document.querySelectorAll(".button");
+    shiftActive = false;
     buttons.forEach((button) => {
-      if (keyboard[button.classList[2]].languages[language]
-         && keyboard[button.classList[2]].languages[language].additionalLetter) {
-        button.innerText = keyboard[button.classList[2]].languages[language].mainLetter;
-
-        const additionalLetterBlock = document.createElement("div");
-        additionalLetterBlock.classList.add("button__additional-letter");
-        additionalLetterBlock.innerText = keyboard[button.classList[2]]
-          .languages[language].additionalLetter;
-        button.appendChild(additionalLetterBlock);
-      } else if (button.innerText.length === 1
+      if (button.innerText.length === 1
          && button.innerText !== button.innerText.toLowerCase()) {
         button.innerText = button.innerText.toLowerCase();
       } else if (button.innerText.length === 1
          && button.innerText !== button.innerText.toUpperCase()) {
         button.innerText = button.innerText.toUpperCase();
+      } else if (keyboard[button.classList[2]].languages.english
+      && keyboard[button.classList[2]].languages.english.additionalLetter) {
+        button.innerText = (keyboard[button.classList[2]].languages[language]
+          && keyboard[button.classList[2]].languages[language].mainLetter)
+          ? keyboard[button.classList[2]].languages[language].mainLetter
+          : keyboard[button.classList[2]].languages.english.mainLetter;
+
+        const additionalLetterBlock = document.createElement("div");
+        additionalLetterBlock.classList.add("button__additional-letter");
+        additionalLetterBlock.innerText = (keyboard[button.classList[2]].languages[language]
+          && keyboard[button.classList[2]].languages[language].additionalLetter)
+          ? keyboard[button.classList[2]].languages[language].additionalLetter
+          : keyboard[button.classList[2]].languages.english.additionalLetter;
+        button.appendChild(additionalLetterBlock);
       }
     });
+  } else if (event.key === "Control") {
+    ctrlActive = false;
   }
 }
 
 function changeButtons() {
   const buttons = document.querySelectorAll(".button");
+  console.log(buttons[15]);
+  const letterCase = (buttons[15].innerText[0] === buttons[15].innerText[0].toUpperCase());
   buttons.forEach((button) => {
-    if (!keyboard[button.classList[2]].languages[language] || keyboard[button.classList[2]].special) { return "not changed"; }
-    button.innerText = keyboard[button.classList[2]].languages[language].mainLetter.toUpperCase();
-    if (!keyboard[button.classList[2]].languages[language].additionalLetter) { return "additional not changed"; }
+    if (!keyboard[button.classList[2]].languages[language]
+      || keyboard[button.classList[2]].special) { return "not changed"; }
+    if (letterCase) {
+      button.innerText = keyboard[button.classList[2]].languages[language].mainLetter.toUpperCase();
+    } else {
+      button.innerText = keyboard[button.classList[2]].languages[language].mainLetter.toLowerCase();
+    }
+    if (!keyboard[button.classList[2]].languages.english.additionalLetter
+    || (keyboard[button.classList[2]].languages[language]
+       && keyboard[button.classList[2]].languages[language].mainLetter.toUpperCase()
+       !== keyboard[button.classList[2]].languages[language].mainLetter)) {
+      return "additional not changed";
+    }
     const additionalLetterBlock = document.createElement("div");
     additionalLetterBlock.classList.add("button__additional-letter");
-    additionalLetterBlock.innerText = keyboard[button.classList[2]]
-      .languages[language].additionalLetter;
+    additionalLetterBlock.innerText = (keyboard[button.classList[2]].languages[language]
+      && keyboard[button.classList[2]].languages[language].additionalLetter)
+      ? keyboard[button.classList[2]].languages[language].additionalLetter
+      : keyboard[button.classList[2]].languages.english.additionalLetter;
     button.appendChild(additionalLetterBlock);
     return "success";
   });
 }
 
 function pressedKey(event) {
-  event.preventDefault();
-  if (event.repeat) {
-    return "sameBtn";
+  let eventCode = false;
+  if (event.type === "keydown") {
+    eventCode = event.code;
+  } else if (event.type === "click") {
+    if (event.target.classList[1] === "button" || event.target.parentElement.classList[1] === "button") {
+      eventCode = (event.target.classList[1] === "button")
+        ? event.target.classList[2] : (event.target.parentElement.classList[1] === "button")
+          ? event.target.parentElement.classList[2] : false;
+    }
+    if (!eventCode) {
+      return "not that type";
+    }
+  }
+  if (eventCode !== "Delete") {
+    event.preventDefault();
   }
 
-  const key = keyboardBlock.querySelector(`.${[event.code]}`);
-  key.classList.add("button_pressed");
-  document.addEventListener("keyup", liftUpKey);
+  if (event.repeat && keyboard[eventCode].special
+    && keyboard[eventCode].languages.english.mainLetter !== "Backspace"
+    && keyboard[eventCode].languages.english.mainLetter !== "Enter") {
+    return "sameBtn";
+  }
+  const key = keyboardBlock.querySelector(`.${[eventCode]}`);
+  if (event.type === "keydown") {
+    key.classList.add("button_pressed");
+    document.addEventListener("keyup", liftUpKey);
+  }
 
-  console.log(event);
-  if ((event.key === "Shift" && event.ctrlKey) || (event.key === "Control" && event.shiftKey)) {
+  if ((eventCode.slice(0, 5) === "Shift" && ctrlActive)
+  || (eventCode.slice(0, 7) === "Control" && shiftActive)) {
     language = (languages[languages.indexOf(language) + 1])
       ? languages[languages.indexOf(language) + 1] : languages[0];
     changeButtons();
-  } else if (event.key === "Shift") {
+  } if (eventCode.slice(0, 5) === "Shift") {
+    shiftActive = !(shiftActive);
+    if (shiftActive) {
+      key.classList.add("button_pressed");
+    } else {
+      key.classList.remove("button_pressed");
+    }
     const buttons = document.querySelectorAll(".button");
     buttons.forEach((button) => {
-      if (!keyboard[button.classList[2]].special
-         && keyboard[button.classList[2]].languages[language]
-         && keyboard[button.classList[2]].languages[language].additionalLetter) {
-        button.innerText = keyboard[button.classList[2]]
-          .languages[language].additionalLetter;
-
-        const additionalLetterBlock = document.createElement("div");
-        additionalLetterBlock.classList.add("button__additional-letter");
-        additionalLetterBlock.innerText = keyboard[button.classList[2]]
-          .languages[language].mainLetter;
-        button.appendChild(additionalLetterBlock);
-      } else if (button.innerText.length === 1
+      if (button.innerText.length === 1
         && button.innerText !== button.innerText.toUpperCase()) {
         button.innerText = button.innerText.toUpperCase();
       } else if (button.innerText.length === 1
         && button.innerText !== button.innerText.toLowerCase()) {
         button.innerText = button.innerText.toLowerCase();
+      } else if (!keyboard[button.classList[2]].special
+        && keyboard[button.classList[2]].languages.english
+        && keyboard[button.classList[2]].languages.english.additionalLetter) {
+        button.innerText = (keyboard[button.classList[2]].languages[language]
+          && keyboard[button.classList[2]].languages[language].additionalLetter)
+          ? keyboard[button.classList[2]].languages[language].additionalLetter
+          : keyboard[button.classList[2]].languages.english.additionalLetter;
+
+        const additionalLetterBlock = document.createElement("div");
+        additionalLetterBlock.classList.add("button__additional-letter");
+        additionalLetterBlock.innerText = (keyboard[button.classList[2]].languages[language]
+          && keyboard[button.classList[2]].languages[language].mainLetter)
+          ? keyboard[button.classList[2]].languages[language].mainLetter
+          : keyboard[button.classList[2]].languages.english.mainLetter;
+        button.appendChild(additionalLetterBlock);
       }
     });
-  } else if (event.key === "CapsLock") {
+  } else if (eventCode.slice(0, 7) === "Control") {
+    ctrlActive = !(ctrlActive);
+    if (ctrlActive) {
+      key.classList.add("button_pressed");
+    } else {
+      key.classList.remove("button_pressed");
+    }
+  } else if (eventCode === "CapsLock") {
     const buttons = document.querySelectorAll(".button");
     buttons.forEach((button) => {
       if (button.innerText.length === 1
@@ -229,10 +295,19 @@ function pressedKey(event) {
         button.innerText = button.innerText.toUpperCase();
       }
     });
-  } else if (!keyboard[event.code].special) {
+  } else if (eventCode === "Space") {
+    textField.textContent += " ";
+  } else if (eventCode === "Backspace") {
+    textField.textContent = textField.textContent.slice(0, -1);
+  } else if (eventCode === "Enter") {
+    textField.textContent += "\n";
+  } else if (eventCode === "Tab") {
+    textField.textContent += "    ";
+  } else if (!keyboard[eventCode].special) {
     textField.textContent += key.innerText.slice(0, 1);
   }
   return "success";
 }
 
 document.addEventListener("keydown", pressedKey);
+document.addEventListener("click", pressedKey);
