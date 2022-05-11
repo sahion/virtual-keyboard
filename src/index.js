@@ -184,7 +184,6 @@ function liftUpKey(event) {
 
 function changeButtons() {
   const buttons = document.querySelectorAll(".button");
-  console.log(buttons[15]);
   const letterCase = (buttons[15].innerText[0] === buttons[15].innerText[0].toUpperCase());
   buttons.forEach((button) => {
     if (!keyboard[button.classList[2]].languages[language]
@@ -217,9 +216,11 @@ function pressedKey(event) {
     eventCode = event.code;
   } else if (event.type === "click") {
     if (event.target.classList[1] === "button" || event.target.parentElement.classList[1] === "button") {
-      eventCode = (event.target.classList[1] === "button")
-        ? event.target.classList[2] : (event.target.parentElement.classList[1] === "button")
-          ? event.target.parentElement.classList[2] : false;
+      if (event.target.classList[1] === "button") {
+        [,, eventCode] = event.target.classList;
+      } else if (event.target.parentElement.classList[1] === "button") {
+        [,, eventCode] = event.target.parentElement.classList;
+      }
     }
     if (!eventCode) {
       return "not that type";

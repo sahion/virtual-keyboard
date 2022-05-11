@@ -1,8 +1,8 @@
 export default class {
-   constructor(mainLetter,additionalLetter){
-      this.mainLetter = mainLetter;
-      if (additionalLetter){
+  constructor(mainLetter, additionalLetter) {
+    this.mainLetter = mainLetter;
+    if (additionalLetter) {
       this.additionalLetter = additionalLetter;
-      }
-   }  
+    }
+  }
 }
