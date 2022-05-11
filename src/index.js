@@ -23,7 +23,14 @@ container.appendChild(information);
 container.appendChild(keyboardBlock);
 
 const languages = ["english", "russian"];
-let language = "english";
+let language = "";
+
+if (localStorage.getItem("language")){
+  language = localStorage.getItem("language");
+} else {
+  language = "english";
+  localStorage.setItem('language', language);
+}
 
 let shiftActive = false;
 let ctrlActive = false;
@@ -131,20 +138,39 @@ function createButton(englishLetter, englishAddLetter, special, russianLetter, r
 
   buttonBlock.classList.add("keyboard__button", "button", keyName);
 
-  buttonBlock.innerText = engLetter;
-  if (englishAddLetter) {
-    const additionalLetterBlock = document.createElement("div");
-    additionalLetterBlock.classList.add("button__additional-letter");
-    additionalLetterBlock.innerText = englishAddLetter;
-    buttonBlock.appendChild(additionalLetterBlock);
-  }
-
   keyboard.createNewButton(
     keyName,
     [englishLetter, englishAddLetter, special, russianLetter, russianAddLetter],
   );
   keyboardBlock.appendChild(buttonBlock);
+
+  
+  if (special){
+    buttonBlock.innerText = engLetter;
+  } else {
+    buttonBlock.innerText = (keyboard[keyName].languages[language]
+      && keyboard[keyName].languages[language].mainLetter)
+      ? keyboard[keyName].languages[language].mainLetter
+      : keyboard[keyName].languages.english.mainLetter;
+  
+
+    if (!keyboard[keyName].languages.english.additionalLetter
+      || (keyboard[keyName].languages[language]
+         && keyboard[keyName].languages[language].mainLetter.toUpperCase()
+         !== keyboard[keyName].languages[language].mainLetter)) {
+        return "additional not changed";
+      }
+      const additionalLetterBlock = document.createElement("div");
+      additionalLetterBlock.classList.add("button__additional-letter");
+      additionalLetterBlock.innerText = (keyboard[keyName].languages[language]
+        && keyboard[keyName].languages[language].additionalLetter)
+        ? keyboard[keyName].languages[language].additionalLetter
+        : keyboard[keyName].languages.english.additionalLetter;
+      buttonBlock.appendChild(additionalLetterBlock);
+  }
 }
+
+
 
 allButtons.forEach((btn) => createButton(...btn));
 
@@ -246,6 +272,7 @@ function pressedKey(event) {
     language = (languages[languages.indexOf(language) + 1])
       ? languages[languages.indexOf(language) + 1] : languages[0];
     changeButtons();
+    localStorage.setItem('language', language);
   } if (eventCode.slice(0, 5) === "Shift") {
     shiftActive = !(shiftActive);
     if (shiftActive) {
